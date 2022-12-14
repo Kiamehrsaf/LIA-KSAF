@@ -1,0 +1,397 @@
+1-Line tracking sensors value test
+int LT_R = A0;
+ int LT_M = A1;
+ int LT_L = A2;
+void setup(){
+ Serial.begin(9600);  
+  pinMode(LT_R,INPUT);
+  pinMode(LT_M,INPUT);
+  pinMode(LT_L,INPUT);
+}
+ 
+void loop() {
+analogRead(LT_R);
+Serial.print(analogRead(LT_R));
+analogRead(LT_M);
+Serial.print(analogRead(LT_M));
+analogRead(LT_L);
+Serial.println(analogRead(LT_L));
+}
+
+
+2-Line tracking code
+int AIN1 = 8;
+int PWMA = 5;
+int BIN1 = 7;
+int PWMB = 6;
+int STB= 3;
+
+#define LT_R analogRead(A0)
+#define LT_M analogRead(A1)
+#define LT_L analogRead(A2)
+
+void forward(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+
+void left(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void back(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void right(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void stop(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,0);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,0);
+digitalWrite(STB,LOW);
+}
+void setup(){
+  pinMode(LT_R,INPUT);
+  pinMode(LT_M,INPUT);
+  pinMode(LT_L,INPUT);
+}
+ 
+void loop() {
+  if(LT_M>260){
+    forward();
+  }
+  else if(LT_R>350) { 
+    right();
+    while(LT_R>350);                             
+  }   
+  else if(LT_L>250) {
+    left();
+    while(LT_L>250);  
+  }
+  else if(LT_M<50) {
+    right();
+    while(LT_M<50);  
+ }    
+ else if(LT_L<50) {
+    right();
+    while(LT_L<50);  
+ }    
+else if(LT_R<50) {
+    left();
+    while(LT_R<50);  
+ }     
+  }
+  
+  
+ 3-IR remote controlling robot  
+
+#include "IRremote.h"
+int receiver = 9;
+int AIN1 = 8;
+int PWMA = 5;
+int BIN1 = 7;
+int PWMB = 6;
+int STB= 3;
+IRrecv irrecv(receiver);
+decode_results results;
+
+
+void forward(){  
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+
+}
+void forward1(){  
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,150);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,150);
+digitalWrite(STB,HIGH);
+
+}
+void left(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void back(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void back2(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,150);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,150);
+digitalWrite(STB,HIGH);
+}
+void right(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void stop(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,0);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,0);
+digitalWrite(STB,LOW);
+}
+void setup(){
+irrecv.enableIRIn();
+
+}
+void loop() {
+ if (irrecv.decode(&results)) 
+ {
+ switch(results.value)
+
+ {
+
+ case 0xFF629D: // UP button pressed
+forward();
+delay(2000); 
+ break;
+
+  case 0xFFA857: // DOWN button pressed
+  back();         
+  delay(2000); 
+ break;
+ 
+  case 0xFF22DD: // left button pressed
+  left();         
+  delay(500); 
+ break;  
+ 
+ case 0xFFC23D: // right button pressed
+  right();         
+  delay(500); 
+ break; 
+ 
+  case 0xFF02FD: // ok button pressed
+  stop();         
+  delay(2000); 
+ break;
+ 
+case 0xFF6897: // 1 button pressed
+  forward1();         
+  delay(2000); 
+ break;  
+
+                                       
+case 0xFF9867: // 2 button pressed
+  back2();         
+  delay(2000); 
+ break;        
+ 
+ }
+irrecv.resume(); 
+
+
+}
+}
+ 
+ 4-obstacle avoidance 
+ 
+ #include <Servo.h>  
+Servo myservo;
+
+int echo = 13;  
+int trig = 12; 
+long duration;
+int distance;
+
+int AIN1 = 8;
+int PWMA = 5;
+int BIN1 = 7;
+int PWMB = 6;
+int STB= 3;
+
+void forward(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+
+void left(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void back(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void right(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void stop(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,0);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,0);
+digitalWrite(STB,LOW);
+}
+
+
+void setup(){
+  myservo.attach(10);      
+  pinMode(echo, INPUT);    
+  pinMode(trig, OUTPUT);  
+  pinMode(AIN1, OUTPUT);
+  pinMode(PWMA, OUTPUT);
+  pinMode(BIN1, OUTPUT);
+  pinMode(PWMB, OUTPUT);
+  pinMode(STB, OUTPUT);
+  stop();
+}
+void loop(){
+myservo.write(-90);
+delay(2000);
+myservo.write(90);
+delay(2000);
+myservo.write(180);
+delay(2000);
+
+digitalWrite(trig, LOW);
+delayMicroseconds(4);
+digitalWrite(trig, HIGH);
+delayMicroseconds(20);
+digitalWrite(trig, LOW);
+duration = pulseIn(echo, HIGH);
+distance = duration * 0.034 / 2;
+
+if (distance>20){
+  
+forward();
+delay(2000);
+stop();
+}
+else if(distance<20){
+back();
+delay(2000);
+stop();
+}
+else if(distance<10){
+right();
+delay(2000);
+stop();
+}
+
+}
+
+ 5- joystick controller
+ int AIN1 = 8;
+int PWMA = 5;
+int BIN1 = 7;
+int PWMB = 6;
+int STB= 3;
+int jPin1=A1;
+int jPin2=A2;
+int jVal1;
+int jVal2;
+
+void forward(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+
+void left(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,HIGH);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void back(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void right(){
+digitalWrite(AIN1,HIGH);
+analogWrite(PWMA,50);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,50);
+digitalWrite(STB,HIGH);
+}
+void stop(){
+digitalWrite(AIN1,LOW);
+analogWrite(PWMA,0);
+digitalWrite(BIN1,LOW);
+analogWrite(PWMB,0);
+digitalWrite(STB,LOW);
+}
+void setup(){
+  
+}
+ 
+void loop() {
+ jVal1=analogRead(jPin1);
+jVal2=analogRead(jPin2); 
+ 
+
+if (jVal1<512){
+forward();
+}
+if(jVal1>=512){
+back();
+if (jVal2<512){
+right();
+}
+if(jVal2>=512){
+left();
+}
+}
+  }
+
+
+ 
+ 
+  
+
+
+
+
